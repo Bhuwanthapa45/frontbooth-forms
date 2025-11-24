@@ -1,17 +1,6 @@
 import React from "react";
 
-/**
- * CheckboxGroup Component
- * -----------------------
- * Controlled checkbox group used with RHF Controller.
- *
- * Props:
- * - label: string
- * - options: array of strings
- * - value: array of selected values
- * - onChange: function (called with updated array)
- * - error: RHF error object
- */
+
 
 export default function CheckboxGroup({ label, options = [], value = [], onChange, error }) {
   

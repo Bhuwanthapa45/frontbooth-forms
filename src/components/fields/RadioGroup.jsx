@@ -1,18 +1,6 @@
 import React from "react";
 
-/**
- * RadioGroup Component
- * ---------------------
- * A reusable radio button group designed to work with React Hook Form.
- *
- * Props:
- * - label: string (group label)
- * - name: string (field name)
- * - options: array [{ value: string, label: string }]
- * - value: string (current selected value)
- * - onChange: fn (handler passed by RHF)
- * - error: object (RHF error object)
- */
+
 
 export default function RadioGroup({ label, name, options = [], value, onChange, error }) {
   return (
