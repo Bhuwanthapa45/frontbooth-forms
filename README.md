@@ -1,36 +1,243 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
 
-First, run the development server:
 
-```bash
+Frontbooth Forms — Next.js + React Hook Form + Yup
+
+A modern, production-ready form built using Next.js (App Router), React Hook Form, Yup validation, and Tailwind CSS.
+This project demonstrates how to build a fully validated, elegant, scalable, and maintainable form experience with modular field components.
+
+⸻
+
+Features
+	•	Next.js App Router (Server + Client Components)
+	•	React Hook Form for advanced form handling
+	•	Yup for schema-based validation
+	•	Modular field components
+	•	Text input
+	•	Textarea
+	•	Select
+	•	Radio group
+	•	Checkbox group
+	•	File upload (custom-styled button + dynamic label)
+	•	Date picker
+	•	Dynamic validation (conditional schema using Yup .when())
+	•	Full error handling & user feedback
+	•	Custom Navbar
+	•	Fully styled UI using Tailwind CSS
+	•	Clean, extensible folder structure
+	•	Support for file uploads via controlled components
+    .   API Calling simulation using callbacks
+
+⸻
+
+📁 Folder Structure
+
+src/
+├─ app/
+│  ├─ layout.js        // Root layout (server component)
+│  ├─ page.js          // Main form page (server component)
+│  └─ globals.css      // Tailwind setup
+│
+├─ components/
+│  ├─ Navbar.jsx       // Modern top navigation bar
+│  ├─ Form.jsx         // Main form logic + RHF + Yup resolver
+│  └─ fields/          // All reusable field components
+│     ├─ TextInput.jsx
+│     ├─ Textarea.jsx
+│     ├─ Select.jsx
+│     ├─ RadioGroup.jsx
+│     ├─ CheckboxGroup.jsx
+│     └─ FileInput.jsx
+│
+├─ lib/
+│  └─ validators.js    // Yup schema for full form validation
+
+This structure is scalable and encourages clean separation of logic and UI.
+
+⸻
+
+🧩 Tech Stack
+
+Technology	Purpose
+Next.js 14+	Framework for routing, rendering & edge-ready deployment
+React Hook Form	Fast, minimal form state management
+Yup	Schema-based validation, powerful conditional logic
+Tailwind CSS	Styling with utility classes
+React	UI library
+
+
+⸻
+
+⚙️ Installation & Setup
+
+# Clone the project
+git clone 
+
+# Navigate
+cd frontbooth-forms
+
+# Install dependencies
+npm install
+
+# Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+⸻
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🧠 How React Hook Form Works in This Project
 
-## Learn More
+1️⃣ Initialization
 
-To learn more about Next.js, take a look at the following resources:
+In Form.jsx:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+const {
+  register,
+  control,
+  handleSubmit,
+  watch,
+  formState: { errors, isSubmitting },
+  reset
+} = useForm({
+  resolver: yupResolver(formSchema),
+  defaultValues: { ... }
+});
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+	•	register → used for native HTML inputs
+	•	control + Controller → used for controlled components like radio, checkboxes, file uploads
+	•	errors → contains validation errors from Yup
+	•	handleSubmit → manages validation + submission
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Yup Validation Schema (How It Works)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Located in: lib/validators.js
+
+Key features:
+	•	Required fields (fullName, email, role, etc.)
+	•	Type checks (age must be a number)
+	•	String length & format validations
+	•	Conditional validation (phone required only if contactMethod is "phone")
+	•	File validation (size + type)
+	•	Date validation (startDate required, empty string transformed to null)
+
+Example of conditional phone validation:
+
+phone: yup
+  .string()
+  .nullable()
+  .when("contactMethod", (method, schema) => {
+    if (method === "phone") {
+      return schema
+        .matches(/^\+?[0-9]{7,15}$/, "Enter a valid phone number")
+        .required("Phone is required");
+    }
+    return schema.notRequired();
+  }),
+
+This ensures business rules are enforced at the schema level.
+
+
+
+ Modular Field Components
+
+Each field lives in /components/fields/ and has a single responsibility.
+
+✔ TextInput
+
+Simple labeled text field.
+
+✔ Textarea
+
+For multi-line input.
+
+✔ Select
+
+Dropdown list with options.
+
+✔ RadioGroup
+
+Used with Controller; returns a single value.
+
+✔ CheckboxGroup
+
+Returns an array of selected skills.
+
+✔ FileInput
+
+Custom button with:
+	•	Tailwind styling
+	•	Dynamic button text
+	•	Hidden native file input
+	•	React Hook Form support via Controller
+
+Example behavior:
+
+Before selecting → “Choose File”
+After selecting → “Choose another file”
+
+
+⸻
+
+ Data Flow Between Components
+
+1. User interacts with fields
+
+Native fields → register
+Custom fields → Controller
+
+2. React Hook Form updates internal form state
+
+Values are tracked without re-rendering the entire form.
+
+3. Yup validates entire data object
+
+If valid → returns cleaned data
+If invalid → returns error messages
+
+4. Errors are passed to each component
+
+Each component displays its own error based on errors.<field>.
+
+5. Submit handler receives fully validated data
+
+File inputs come in as File objects.
+
+⸻
+
+ Form Submission Flow
+	1.	User clicks Submit
+	2.	React Hook Form invokes Yup validator
+	3.	If validation fails:
+	•	Errors appear under fields
+	4.	If validation succeeds:
+	•	Runs onSubmit(data)
+	•	You can:
+	•	Send data to API route
+	•	Upload files using FormData
+	•	Reset the form
+
+Example snippet:
+
+async function onSubmit(data) {
+  console.log("Form submitted", data);
+  alert("Success!");
+  reset();
+}
+
+
+⸻
+ UI/UX Highlights
+	•	Clean, modern layout using Tailwind
+	•	Accessible labels & input elements
+	•	Custom file upload button with hover effects
+	•	Responsive navbar with branding
+	•	Smooth validation feedback
+	•	Minimal re-rendering thanks to React Hook Form
+
+⸻
+
+
+
+⸻
+By Bhuwanesh Jung Thapa
